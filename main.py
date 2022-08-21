@@ -105,6 +105,22 @@ class Snake:
                 else:
                     cube.move(cube.dir_x, cube.dir_y)
 
+    def eat_apple(self):
+        tail = self.body[-1]
+        dir_x, dir_y = tail.dir_x, tail.dir_y
+
+        if dir_x == -1 and dir_y == 0:
+            self.body.append(Cube((tail.position[0] + 1, tail.position[1]), self.color))
+        elif dir_x == 0 and dir_y == -1:
+            self.body.append(Cube((tail.position[0], tail.position[1] + 1), self.color))
+        elif dir_x == 1 and dir_y == 0:
+            self.body.append(Cube((tail.position[0] - 1, tail.position[1]), self.color))
+        elif dir_x == 0 and dir_y == 1:
+            self.body.append(Cube((tail.position[0], tail.position[1] - 1), self.color))
+
+        self.body[-1].dir_x = dir_x
+        self.body[-1].dir_y = dir_y
+
 
 def snack(cols, snake):
     positions = snake.body
@@ -144,6 +160,9 @@ def main():
         pygame.time.delay(150)
         clock.tick(10)
         snake.move()
+        if snake.body[0].position == apple.position:
+            snake.eat_apple()
+            apple = Cube(snack(cols, snake), color=(255, 55, 0))
 
         draw_board(board, snake, apple)
 
