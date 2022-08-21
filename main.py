@@ -5,19 +5,20 @@
 
 
 # def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    # print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+# Use a breakpoint in the code line below to debug your script.
+# print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
 
 # Press the green button in the gutter to run the script.
 # if __name__ == '__main__':
-    # print_hi('PyCharm')
+# print_hi('PyCharm')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 
-
+from tkinter import messagebox
 import pygame
 import random
+import tkinter as tk
 
 
 class Cube:
@@ -36,7 +37,7 @@ class Cube:
         i = self.position[0]
         j = self.position[1]
 
-        pygame.draw.rect(surface, self.color, (i * size_between + 1, j * size_between + 1, size_between - 1, size_between - 1))
+        pygame.draw.rect(surface, self.color, (i * size_between, j * size_between, size_between, size_between))
 
     def move(self, dir_x, dir_y):
         self.dir_x = dir_x
@@ -121,6 +122,14 @@ class Snake:
         self.body[-1].dir_x = dir_x
         self.body[-1].dir_y = dir_y
 
+    def reset(self, position):
+        self.head = Cube(position, self.color)
+        self.body = []
+        self.body.append(self.head)
+        self.turns = {}
+        self.dir_x = 1
+        self.dir_y = 0
+
 
 def snack(cols, snake):
     positions = snake.body
@@ -144,6 +153,17 @@ def draw_board(surface, snake, apple):
     pygame.display.update()
 
 
+def message_box(subject, content):
+    root = tk.Tk()
+    root.attributes('-topmost', True)
+    root.withdraw()
+    messagebox.showinfo(subject, content)
+    try:
+        root.destroy()
+    except:
+        pass
+
+
 def main():
     width = 500
     height = 500
@@ -159,10 +179,18 @@ def main():
     while flag:
         pygame.time.delay(150)
         clock.tick(10)
+
         snake.move()
+
         if snake.body[0].position == apple.position:
             snake.eat_apple()
             apple = Cube(snack(cols, snake), color=(255, 55, 0))
+
+        for i in range(len(snake.body)):
+            if snake.body[i].position in list(map(lambda z: z.position, snake.body[i + 1:])):
+                message_box('You lost!', 'Your score is ' + str(len(snake.body)) + '\n' + 'Play again...')
+                snake.reset((10, 10))
+                break
 
         draw_board(board, snake, apple)
 
