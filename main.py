@@ -17,6 +17,7 @@
 
 
 import pygame
+import random
 
 
 class Cube:
@@ -105,9 +106,25 @@ class Snake:
                     cube.move(cube.dir_x, cube.dir_y)
 
 
-def draw_board(surface, snake):
+def snack(cols, snake):
+    positions = snake.body
+
+    while True:
+        x = random.randrange(cols)
+        y = random.randrange(cols)
+
+        if len(list(filter(lambda z: z.position == (x, y), positions))) > 0:
+            continue
+        else:
+            break
+
+    return x, y
+
+
+def draw_board(surface, snake, apple):
     surface.fill((55, 55, 55))
     snake.draw(surface)
+    apple.draw(surface)
     pygame.display.update()
 
 
@@ -118,6 +135,7 @@ def main():
 
     board = pygame.display.set_mode((width, height))
     snake = Snake((10, 10))
+    apple = Cube(snack(cols, snake), color=(255, 55, 0))
 
     flag = True
     clock = pygame.time.Clock()
@@ -127,7 +145,7 @@ def main():
         clock.tick(10)
         snake.move()
 
-        draw_board(board, snake)
+        draw_board(board, snake, apple)
 
 
 if __name__ == '__main__':
